@@ -5,11 +5,12 @@ Date: 11/08/2016
 
 Description: Digital Wallet main code and classes
 
-Usage: python dwGraph.py batchFile streamFile output1File output2File outputFile3
+Usage: python dwGraph.py batchFile streamFile output1File output2File outputFile3 outputFile4
 """
 
 import sys
 import time
+import datetime
 
 # Basic queue class used for breadth first search to traverse verteces
 class Queue:
@@ -36,6 +37,8 @@ class Queue:
 class Vertex:
     def __init__(self,key):
         self.id = key
+        self.lastPayDateTime = datetime.datetime.strptime('1970-01-01 00:00:00', '%Y-%m-%d %H:%M:%S') 
+        self.paymentCurrentMinute = 0 
         self.degree = 0
         self.parent = None   
         self.visited = 'white'
@@ -45,6 +48,10 @@ class Vertex:
         self.degree = 0
         self.parent = None   
         self.visited = 'white'    
+
+    def setPayment(self,payDateTime,payment):
+        self.lastPayDateTime = payDateTime 
+        self.paymentCurrentMinute = payment
 
     def getDegree(self):        
         return self.degree
@@ -85,7 +92,7 @@ class Graph:
         self.vertList = {}
         self.numVertices = 0
 
-    def addVertex(self,key):
+    def addVertex(self,key,):
         if key not in self.vertList:
             self.numVertices = self.numVertices + 1
             newVertex = Vertex(key)
@@ -131,6 +138,7 @@ class Graph:
         infile.readline()   # ignore the first line, i.e. skip the headers
 
         t0 = time.time()
+        # variables used in unit testing
         lineRead, lineError, repeatFrom, repeatTo, repeatEdge, selfVertex = 0, 0, 0, 0, 0, 0
         for line in infile:
             foundFrom, foundTo = False, False
@@ -138,7 +146,7 @@ class Graph:
             col = line.split(',')
 				# some lines might contain data of wrong type 
             try:
-                l1, l2, l3 = int(col[1]), int(col[2]), float(col[3])
+                l0, l1, l2, l3 = datetime.datetime.strptime(col[0], '%Y-%m-%d %H:%M:%S'), int(col[1]), int(col[2]), float(col[3])
             except (IndexError,ValueError):
                 if verbose:
                     print('Oops!  That was not a valid entry at line ',lineRead+1,': ',line)
@@ -152,6 +160,14 @@ class Graph:
             if self.addVertex(l2) == None:
                 repeatTo += 1
                 foundTo = True
+            # for the receiving user set the date and time of last payment as well as the total payment in the current minute
+            lPDT = self.getVertex(l2).lastPayDateTime
+            if lPDT.date() == l0.date() and lPDT.hour == l0.hour and lPDT.minute == l0.minute:
+                # if previous payment to this user was in the same minute add the new payment    	
+                self.getVertex(l2).setPayment(l0,self.getVertex(l2).paymentCurrentMinute+l3)
+            else:
+                # if previous payment to this user was not in the same minute just take the new payment    	
+                self.getVertex(l2).setPayment(l0,l3)  
             # add edges
             if self.getVertex(l2) in self.getVertex(l1).getConnections():
                 repeatEdge += 1
@@ -185,7 +201,7 @@ class Graph:
             col = line.split(',')
 				# some lines might contain data of wrong type 
             try:
-                l1, l2, l3 = int(col[1]), int(col[2]), float(col[3])
+                l0, l1, l2, l3 = datetime.datetime.strptime(col[0], '%Y-%m-%d %H:%M:%S'), int(col[1]), int(col[2]), float(col[3])
             except (IndexError,ValueError):
                 if verbose:
                     print('Oops!  That was not a valid entry at line ',lineRead+1,': ',line)
@@ -196,6 +212,14 @@ class Graph:
                 repeatFrom += 1
             if self.addVertex(l2) == None:
                 repeatTo += 1
+            # for the receiving user set the date and time of last payment as well as the total payment in the current minute
+            lPDT = self.getVertex(l2).lastPayDateTime
+            if lPDT.date() == l0.date() and lPDT.hour == l0.hour and lPDT.minute == l0.minute:
+                # if previous payment to this user was in the same minute add the new payment    	
+                self.getVertex(l2).setPayment(l0,self.getVertex(l2).paymentCurrentMinute+l3)
+            else:
+                # if previous payment to this user was not in the same minute just take the new payment    	
+                self.getVertex(l2).setPayment(l0,l3)
 
             flag = False
             if feature == 1:
@@ -210,6 +234,9 @@ class Graph:
                          break
             if feature == 3:
                 if self.friendsDegree(l1,l2,4):
+                    flag = True
+            if feature == 4:
+                if self.getVertex(l2).paymentCurrentMinute > 100 and self.getVertex(l2).paymentCurrentMinute < 10000:
                     flag = True
 
             if flag or l1 == l2:
@@ -292,26 +319,30 @@ class Graph:
 def main():
 
     # parse the input parameters: 
-    #    input batch file, input stream file, output file for feature 1, output file for feature 2, output file for feature 3
+    #    input batch file, input stream file, output file for feature 1, output file for feature 2, output file for feature 3, output file for feature 4
     batchFileName = sys.argv[1] 
     streamFileName = sys.argv[2] 
     output1FileName = sys.argv[3] 
     output2FileName = sys.argv[4] 
     output3FileName = sys.argv[5] 
+    output4FileName = sys.argv[6] 
 
     # create the digital wallet graph
     g = Graph()
     # process input batch file, for verbose output change second argument to True
     g.readBatchFile(batchFileName,False)
 
-    # Feature 1: process transactions from input stream file and generate output1.txt
+    # Feature 1: trusted if previously paid. Process transactions from input stream file and generate output1.txt
     g.writeStreamFile(streamFileName,output1FileName,1,False)
 
-    # Feature 2: process transactions from input stream file and generate output2.txt
+    # Feature 2: trusted if in friend network of degree 2. Process transactions from input stream file and generate output2.txt
     g.writeStreamFile(streamFileName,output2FileName,2,False)
 
-    # Feature 3: process transactions from input stream file and generate output3.txt
+    # Feature 3: trusted if in friend network of degree 4. Process transactions from input stream file and generate output3.txt
     g.writeStreamFile(streamFileName,output3FileName,3,False)
+
+    # Feature 4: trusted if in the current time interval payee received an amount in the certain range. Process transactions from input stream file and generate output4.txt
+    g.writeStreamFile(streamFileName,output4FileName,4,False)
 
 if __name__ == '__main__':
     main()
