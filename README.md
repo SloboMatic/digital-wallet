@@ -10,11 +10,14 @@ In such a data structure, being in the "friends network" feature of degree n is 
 
 For features 1 and 2 we can directly look for degree 1 or 2 neighbors without writing special methods. For feature 3 the breadth-first search graph algorithm is implemented. This solution can be used for friends of arbitrary degrees n. The search is stopped after either the payee vertex is visited, after all verteces of degrees less or equal to n are visited, or after all verteces in the graph are visited.
 
+## Feature 4
+An additional feature, feature 4, uses date and time of the transaction, as well as the amount of money of the transaction, to keep the track of the total amount of payments received by each user in the current interval of time. When a transaction is processed in real-time it is declared "trusted" if within the curent interval of time the payee received the amount of money that falls within a specified interval. For the purposes of this challenge, the interval of time is one minute (selected to correspond to the interval of time in the given batch_payment.csv file) and the interval of amounts is (100,10000). Similar feature can be developed to monitor the amount paid by each user.  
+
 ## Usage
 * sh run.sh
 
 or directly 
-* python ./src/dwGraph.py batchPaymentFileName streamPaymentFileName output1FileName output2FileName output3FileName
+* python ./src/dwGraph.py batchPaymentFileName streamPaymentFileName output1FileName output2FileName output3FileName output4FileName
 
 For instance,
 * python ./src/dwGraph.py ./paymo_input/batch_payment.csv ./paymo_input/stream_payment.csv ./paymo_output/output1.txt ./paymo_output/output2.txt ./paymo_output/output3.txt
