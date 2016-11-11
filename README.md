@@ -16,7 +16,7 @@ An additional feature, feature 4, uses date and time of the transaction, as well
 ## Usage
 * sh run.sh
 
-Beside the simple test the run.sh file has commented out two additional tests
+Beside the simple test with one transaction, two additional tests are commented out in the run.sh.
 
 Or, run code directly with
 * python ./src/dwGraph.py batchPaymentFileName streamPaymentFileName output1FileName output2FileName output3FileName output4FileName
