@@ -16,16 +16,18 @@ An additional feature, feature 4, uses date and time of the transaction, as well
 ## Usage
 * sh run.sh
 
-or directly 
+Beside the simple test the run.sh file has commented out two additional tests
+
+Or, run code directly with
 * python ./src/dwGraph.py batchPaymentFileName streamPaymentFileName output1FileName output2FileName output3FileName output4FileName
 
 For instance,
-* python ./src/dwGraph.py ./paymo_input/batch_payment.csv ./paymo_input/stream_payment.csv ./paymo_output/output1.txt ./paymo_output/output2.txt ./paymo_output/output3.txt
+* python ./src/dwGraph.py ./paymo_input/batch_payment.csv ./paymo_input/stream_payment.csv ./paymo_output/output1.txt ./paymo_output/output2.txt ./paymo_output/output3.txt ./paymo_output/output4.txt
 
 ## Dependencies
 The code uses no special libraries. Only the standard Python packages sys and time are used, but even that is not for essential program features.
 
-## Testing
+## Unit testing
 Tested both in Linux and Windows environments. Due to the LF vs CRLF issues, slight modifications in code needed for the Windows version (commented in the code).
 
 The unit tests are provided in test_dwGraph.py. The command for a batch of unit tests:

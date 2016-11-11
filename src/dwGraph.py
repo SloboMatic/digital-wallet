@@ -1,4 +1,4 @@
-"""/
+"""
 File: dwGraph.py
 Author: Slobo Matic
 Date: 11/08/2016
@@ -32,8 +32,8 @@ class Queue:
     def __str__(self):
         return str(self.items)
 
-# Basic vertex class representing Digital Wallet users
-# Initialized after each breadth-first search 
+# Vertex class representing Digital Wallet users
+# Reinitialized after each breadth-first search 
 class Vertex:
     def __init__(self,key):
         self.id = key
@@ -133,6 +133,8 @@ class Graph:
         return str(self.numVertices) + ' vertices: ' + str([x for x in self.vertList])
 
     # read input batch file, process transactions, add new vertices and edges
+    # input: filename - input batch file, verbose - std output mode
+    # output: variables used in testing
     def readBatchFile(self,fileName,verbose):
         infile = open(fileName, "r") #, encoding = 'utf-8')
         infile.readline()   # ignore the first line, i.e. skip the headers
@@ -186,6 +188,8 @@ class Graph:
         return repeatFrom, repeatTo, repeatEdge, lineError, selfVertex
 
     # read input stream file, process transactions, write warnings to output file
+    # input: filename - input stream file, outputFileName - output trusted/verified file, feature - the number of the feature, verbose - std output mode
+    # output: variables used in testing
     def writeStreamFile(self,fileName,outputFileName,feature,verbose):
         infile = open(fileName, "r") #, encoding = 'utf-8')
         infile.readline()   # ignore the first lien, i.e. skip the headers
@@ -260,6 +264,9 @@ class Graph:
         return repeatFrom, repeatTo, repeatEdge, lineError, selfVertex
 
 	 # breadth-first search (used in testing)
+    # returns a set of verteces that forms the circle of friends of a certain degree of a certain vertex
+    # input: root - vertex, relDegree - degree of the circle
+    # output: the set of verteces that forms the circle
     def bfs(self, root, relDegree = float('inf')):
         friends = set([])
         vertQueue = Queue()
@@ -286,7 +293,9 @@ class Graph:
             currentVert.initBFS()
         return friends
 
-    # returns whether a vertex is in the circle of friends of degree reldegree
+    # returns whether two verteces are in the circle of friends of a certain degree
+    # input: root, leaf - the two verteces, relDegree - degree of the circle
+    # output: True/False
     def friendsDegree(self, root, leaf, relDegree = float('inf')):
         flag = False
         friends = set([])
@@ -327,22 +336,27 @@ def main():
     output3FileName = sys.argv[5] 
     output4FileName = sys.argv[6] 
 
-    # create the digital wallet graph
-    g = Graph()
-    # process input batch file, for verbose output change second argument to True
-    g.readBatchFile(batchFileName,False)
+    verbose = False
 
     # Feature 1: trusted if previously paid. Process transactions from input stream file and generate output1.txt
-    g.writeStreamFile(streamFileName,output1FileName,1,False)
+    g = Graph()
+    g.readBatchFile(batchFileName,verbose)
+    g.writeStreamFile(streamFileName,output1FileName,1,verbose)
 
     # Feature 2: trusted if in friend network of degree 2. Process transactions from input stream file and generate output2.txt
-    g.writeStreamFile(streamFileName,output2FileName,2,False)
+    g = Graph()
+    g.readBatchFile(batchFileName,verbose)
+    g.writeStreamFile(streamFileName,output2FileName,2,verbose)
 
     # Feature 3: trusted if in friend network of degree 4. Process transactions from input stream file and generate output3.txt
-    g.writeStreamFile(streamFileName,output3FileName,3,False)
+    g = Graph()
+    g.readBatchFile(batchFileName,verbose)
+    g.writeStreamFile(streamFileName,output3FileName,3,verbose)
 
     # Feature 4: trusted if in the current time interval payee received an amount in the certain range. Process transactions from input stream file and generate output4.txt
-    g.writeStreamFile(streamFileName,output4FileName,4,False)
+    g = Graph()
+    g.readBatchFile(batchFileName,verbose)
+    g.writeStreamFile(streamFileName,output4FileName,4,verbose)
 
 if __name__ == '__main__':
     main()
