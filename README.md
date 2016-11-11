@@ -4,7 +4,7 @@ Python solution to the digital wallet coding challenge.
 
 The code is based on graph, vertex and queue data structures with slight modifications for methods that address challenge requirements.
 
-The Digital Wallet graph is built by processing the batch input file and adding a transaction for each new pair of users as a new edge in the graph. When a stream input file is processed, a feature of each transaction is verified, **trusted** or **unverified** written in the output file, and the transaction is added as a graph edge (if new).  
+The Digital Wallet graph is built by processing the batch input file and adding a transaction for each new pair of users as a new edge in the graph. When a stream input file is processed, a feature of each transaction is verified, "trusted" or "unverified" written in the output file, and the transaction is added as a graph edge (if new).  
 
 In such a data structure, being in the "friends network" feature of degree n is equivalent to being in the set of a vertex neighbors of degree n. For the challenge feature 1 n is 1, for feature 2 n is 2 and for feature 3 n is 4. 
 
