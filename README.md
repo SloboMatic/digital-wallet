@@ -29,7 +29,7 @@ The code uses no special libraries. Only the standard Python packages sys and ti
 Tested both in Linux and Windows environments. Due to the LF vs CRLF issues, slight modifications in code needed for the Windows version (commented in the code).
 
 The unit tests are provided in test_dwGraph.py. The command for a batch of unit tests:
-* python src/test_dwGraph.py -v
+* python ./src/test_dwGraph.py -v
 
 This includes several tests on the long batch_payment.csv input file.
 
